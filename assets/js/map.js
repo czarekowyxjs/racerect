@@ -23,7 +23,7 @@ Scene.prototype.generate = function() {
 	};
 	//
 	for(var i = 0; i < this.obstacle.count; i++) {
-		this.obstacle.h = _GLOBAL.points < 2000 ? _GLOBAL.rand(25,60) : _GLOBAL.rand(25,80);
+		this.obstacle.h = _GLOBAL.points < 2000 ? _GLOBAL.rand(30,60) : _GLOBAL.rand(40,80);
 		this.obstacle.y = this.y-this.obstacle.h;
 		//
 		this.obstacle.w = Math.round(this.obstacle.h/2);
@@ -34,7 +34,7 @@ Scene.prototype.generate = function() {
 		this.obstacles[i].h = this.obstacle.h;
 		//
 		this.obstacles[i].y = this.obstacle.y;
-		this.obstacles[i].x = i===0 ? _GLOBAL.w : _GLOBAL.rand(this.obstacles[i-1].x+this.obstacle.w+this.obstacle.space, this.obstacles[i-1].x+this.obstacle.w+(this.obstacle.space*4));
+		this.obstacles[i].x = i===0 ? _GLOBAL.w : _GLOBAL.rand(this.obstacles[i-1].x+this.obstacle.w+this.obstacle.space, this.obstacles[i-1].x+this.obstacle.w+(this.obstacle.space*6));
 		//
 	}
 };
@@ -69,9 +69,9 @@ Scene.prototype.draw = function() {
 	if(this.obstacles[0].x+this.obstacle.w <= 0) {
 		this.obstacles.splice(0,1);
 		this.new_obstacle = {
-			h: _GLOBAL.rand(20,50),
+			h: _GLOBAL.points < 2000 ? _GLOBAL.rand(30,60) : _GLOBAL.rand(40,80),
 			w: 0,
-			x: _GLOBAL.rand(this.obstacles[this.obstacles.length-1].x+this.obstacle.w+this.obstacle.space,this.obstacles[this.obstacles.length-1].x+this.obstacle.w+(this.obstacle.space*4)),
+			x: _GLOBAL.rand(this.obstacles[this.obstacles.length-1].x+this.obstacle.w+this.obstacle.space,this.obstacles[this.obstacles.length-1].x+this.obstacle.w+(this.obstacle.space*6)),
 			y: 0,
 		};
 		this.new_obstacle.w = Math.round(this.new_obstacle.h/2);

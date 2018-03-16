@@ -12,16 +12,24 @@ _GLOBAL = {
 	},
 	timer: function() {
 		_GLOBAL.timing += 1;
-
+		//
 		if(_GLOBAL.timing % 10 == 0) App.toggleBackground();
 		if(_GLOBAL.timing % 8 == 0) App.map.obstacle.speed += 0.5;
-
-		App.addTrophy();
+	},
+	setBg: function() {
+		if(localStorage.getItem('abg')) {
+			document.body.style.background = JSON.parse(localStorage.getItem('abg'));
+		}
 	}
 };
 
 window.addEventListener("DOMContentLoaded", function() {
-	App.init(0);
+	_GLOBAL.setBg();
+	App.trophyImg = new Image();
+	App.trophyImg.addEventListener('load', App.init(0), false);
+	App.trophyImg.src = 'assets/img/trophy.svg';
+	App.titlePosition();
+	App.title();
 }, false);
 
 function App() {};
@@ -53,21 +61,25 @@ App.init = function(e) {
 	document.body.appendChild(App.txt_canvas);
 	//
 	this.map = new Scene();
-	this.trophies = new Trophies();
+	this.trophy = new Trophy();
 	this.ship = new Ship();
 	//
 	document.body.appendChild(App.canvas);
+	//document.body.appendChild(App.test_canvas);
 	//
 	window.addEventListener('keydown', App.onKey, false);
-
+	//
 	App.menuView();
-	App.title();
+	//
+
+	window.addEventListener('keyup', App.start, false);
 };
 
 App.start = function(e) {
 	return e.keyCode == 13 ? (function() { 
+		App.titlePosition();
+		App.title();
 		App.render(); 
-		App.trophies.push();
 		_GLOBAL.timing = 0;
 		App.timer = setInterval(_GLOBAL.timer, 1000);
 		window.removeEventListener('keyup', App.start, false); 
@@ -101,11 +113,13 @@ App.render = function(time) {
 		App.txt_ctx.clearRect(0,0,_GLOBAL.w,_GLOBAL.h);
 		//
 		App.map.draw();
-		App.trophies.draw();
+		App.addTrophy();
+		App.trophy.draw();
 		App.ship.draw();
 		//
 		App.result();
 		App.bestResult();
+		//
 		App.title();
 	}
 };
@@ -117,8 +131,16 @@ App.clearCanvas = function(...contexts) {
 };
 
 App.onKey = function(e) {
-	if(e.keyCode == 38 && !App["key_"+e.keyCode]) {
+	console.log(e.keyCode);
+	if((e.keyCode == 38 || e.keyCode == 32 || e.keyCode == 87) && !App["key_"+e.keyCode]) {
+
 		App["key_"+e.keyCode] = true;
+	}
+};
+
+App.addTrophy = function() {
+	if(_GLOBAL.rand(0,800) == 0) {
+		App.trophy.push();
 	}
 };
 
@@ -151,19 +173,21 @@ App.bestResult = function() {
 	App.txt_ctx.fillText(App.bestResultText, _GLOBAL.w-App.bestResultLength-10, 20);
 };
 
-App.addTrophy = function() {
-	if(_GLOBAL.timing % 5 == 0) {
-		App.trophies.push();
-	}
-};
-
-App.collisionDetected = function() {
+App.collisionObstacleDetected = function() {
 	_GLOBAL.render = false;
 	//
 	setTimeout(function() {
 		App.clearCanvas('ctx','test_ctx','txt_ctx');
 		App.loseView();
 	}, 14);
+};
+
+App.collisionTrophyDetected = function(index) {
+	App.trophy.hide(index);
+	App.tmpTrophyPoints = _GLOBAL.rand(1,999);
+	_GLOBAL.points += App.tmpTrophyPoints;
+	App.trophy.giftAnimationInit();
+	App.trophy.giftAnimationDeclare(App.tmpTrophyPoints);
 };
 
 App.menuView = function() {
@@ -179,7 +203,6 @@ App.menuView = function() {
 };
 
 App.loseView = function() {
-	App.title();
 	//
 	this.earnedPointsText = "You earned "+_GLOBAL.points+" points";
 	this.earnedPointsLength = App.txt_ctx.measureText(App.earnedPointsText).width;
@@ -191,31 +214,42 @@ App.loseView = function() {
 	setTimeout(function() {
 		_GLOBAL.render = true;
 		_GLOBAL.points = 0;
-		App.ship.collisionDetected = false;
+		App.ship.collisionObstacleDetected = false;
 		clearInterval(App.timer);
 		App.map.generate();
-		App.trophies.trophies = [];
+		App.trophy.trophies = [];
 		window.addEventListener('keyup', App.init, false);
 	},150);
 	//
 };
 
 App.toggleBackground = function() {
-	this.actualBg = 'rgb('+_GLOBAL.rand(30,200)+','+_GLOBAL.rand(30,200)+','+_GLOBAL.rand(30,200)+')';
+	this.actualBg = 'rgb('+_GLOBAL.rand(30,180)+','+_GLOBAL.rand(30,180)+','+_GLOBAL.rand(30,180)+')';
 
 	document.body.style.background = App.actualBg;
+	//
+	localStorage.setItem('abg', JSON.stringify(App.actualBg));
+};
+
+App.titlePosition = function() {
+	this.titleX = _GLOBAL.w/2-App.titleLength/1.9;
+	this.madeByX = _GLOBAL.w/2-App.madeByLength/5.1;
+	this.titleY = _GLOBAL.d/4-20;
+	this.madeByY = _GLOBAL.d/4;
 };
 
 App.title = function() {
+	this.titleX -= App.map.obstacle.speed || 0;
+	this.madeByX -= App.map.obstacle.speed || 0;
 	this.titleText = "RaceRect";
 	this.titleLength = App.txt_ctx.measureText(App.titleText).width;
 	App.txt_ctx.font = "22pt Arial";
 	App.txt_ctx.fillStyle = 'white';
-	App.txt_ctx.fillText(App.titleText, _GLOBAL.w/2-App.titleLength/2, 40);
+	App.txt_ctx.fillText(App.titleText, this.titleX, this.titleY);
 	this.madeByText = "made by Cezary Góralski © 2018";
 	this.madeByLength = App.txt_ctx.measureText(App.madeByText).width;
 	App.txt_ctx.font = "11pt Arial";
 	App.txt_ctx.fillStyle = 'white';
-	App.txt_ctx.fillText(App.madeByText, _GLOBAL.w/2-App.madeByLength/5, 60);
+	App.txt_ctx.fillText(App.madeByText, this.madeByX, this.madeByY);
 };
 

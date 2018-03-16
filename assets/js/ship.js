@@ -11,11 +11,12 @@ function Ship() {
 	this.firstJump = 0;
 	this.jumpSpeedY = 14;
 	//
-	this.collisionDetected = false;
+	this.collisionObstacleDetected = false;
 };
 
 Ship.prototype.draw = function() {
-	 if(App.key_38) {
+	//
+	 if(App.key_38 || App.key_32 || App.key_87) {
 	 	this.a += 360/41;
 		if(this.moves == 0) {
 			this.firstJump = this.y;
@@ -28,16 +29,18 @@ Ship.prototype.draw = function() {
 		}
 		if(this.moves > 18) {
 			App.key_38 = false;
+			App.key_32 = false;
+			App.key_87 = false;
 			this.moves = 0;
 			this.y = this.firstJump;
 			this.a = 45;
 		}
 		this.moves++;
 	} 
-
+	//
 	App.ctx.fillStyle = 'white';
 	App.ctx.beginPath();
-	for(var i = 0; i < 4; i++) {
+	for(let i = 0; i < 4; i++) {
 		this.tmp_a = i===0 ? this.a : (this.a+(90*i));
 		this.points[i] = {};
 		this.points[i].x = Math.sin(Math.PI/180*this.tmp_a)*this.r+this.x;
@@ -46,13 +49,14 @@ Ship.prototype.draw = function() {
 		App.ctx[i===0 ? 'moveTo' : 'lineTo'](this.points[i].x, this.points[i].y);
 		//
 		if(this.collisionObstacle(this.points[i].x, this.points[i].y)) {
-			this.collisionDetected = true;
+			this.collisionObstacleDetected = true;
 		}
+		this.collisionTrophy(this.points[i].x, this.points[i].y);
 	}
 	App.ctx.closePath();
 	App.ctx.fill();
-
-	if(this.collisionDetected) App.collisionDetected();
+	//
+	if(this.collisionObstacleDetected) App.collisionObstacleDetected();
 };
 
 Ship.prototype.collisionObstacle = function(x,y) {
@@ -67,9 +71,11 @@ Ship.prototype.collisionObstacle = function(x,y) {
 };
 
 Ship.prototype.collisionTrophy = function(x,y) {
-	for(let i = 0; i < App.trophies.trophies.length; i++) {
-		if(App.trophies.trophies[i].x-5 < x && App.trophies.trophies[i].x+App.trophies.trophies[i].w > x) {
-			
+	for(let i = 0; i < App.trophy.trophies.length; i++) {
+		if(App.trophy.trophies[i].x-20 < x && App.trophy.trophies[i].x+App.trophy.trophies[i].w+20 > x) {
+			if(App.test_ctx.getImageData(x,y,1,1).data[2] == 255) {
+				App.collisionTrophyDetected(i);
+			}
 		}
 	}
 };
