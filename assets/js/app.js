@@ -105,23 +105,21 @@ App.resize = function() {
 App.render = function(time) {
 	if(!_GLOBAL.render) return;
 	requestAnimationFrame(App.render);
-	if(time-_GLOBAL.lastTime >= 1000/_GLOBAL.fps) {
-		_GLOBAL.lastTime = time;
-		//
-		App.ctx.clearRect(0,0,_GLOBAL.w,_GLOBAL.h);
-		App.test_ctx.clearRect(0,0,_GLOBAL.w,_GLOBAL.h);
-		App.txt_ctx.clearRect(0,0,_GLOBAL.w,_GLOBAL.h);
-		//
-		App.map.draw();
-		App.addTrophy();
-		App.trophy.draw();
-		App.ship.draw();
-		//
-		App.result();
-		App.bestResult();
-		//
-		App.title();
-	}
+	_GLOBAL.lastTime = time;
+	//
+	App.ctx.clearRect(0,0,_GLOBAL.w,_GLOBAL.h);
+	App.test_ctx.clearRect(0,0,_GLOBAL.w,_GLOBAL.h);
+	App.txt_ctx.clearRect(0,0,_GLOBAL.w,_GLOBAL.h);
+	//
+	App.map.draw();
+	App.addTrophy();
+	App.trophy.draw();
+	App.ship.draw();
+	//
+	App.result();
+	App.bestResult();
+	//
+	App.title();
 };
 
 App.clearCanvas = function(...contexts) {
@@ -139,7 +137,7 @@ App.onKey = function(e) {
 };
 
 App.addTrophy = function() {
-	if(_GLOBAL.rand(0,800) == 0) {
+	if(_GLOBAL.rand(0,100) == 0) {
 		App.trophy.push();
 	}
 };

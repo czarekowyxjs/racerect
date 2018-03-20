@@ -113,8 +113,8 @@ Trophy.prototype.push = function() {
 		v: true,
 		j: false,
 		jCount: 0,
-		jSpeed: 0.7,
-		jMax: 20
+		jSpeed: 0.3,
+		jMax: 40
 	});
 };
 

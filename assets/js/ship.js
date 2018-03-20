@@ -9,7 +9,7 @@ function Ship() {
 	//
 	this.moves = 0;
 	this.firstJump = 0;
-	this.jumpSpeedY = 14;
+	this.jumpSpeedY = 7;
 	//
 	this.collisionObstacleDetected = false;
 };
@@ -21,13 +21,13 @@ Ship.prototype.draw = function() {
 		if(this.moves == 0) {
 			this.firstJump = this.y;
 		}
-		if(this.moves <= 9) { 
+		if(this.moves <= 15) { 
 			this.y -= this.jumpSpeedY;
 		}
-		if(this.moves < 18 && this.moves >= 9) {
+		if(this.moves < 30 && this.moves >= 15) {
 			this.y += this.jumpSpeedY;
 		}
-		if(this.moves > 18) {
+		if(this.moves > 30) {
 			App.key_38 = false;
 			App.key_32 = false;
 			App.key_87 = false;

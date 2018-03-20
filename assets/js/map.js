@@ -18,7 +18,7 @@ Scene.prototype.generate = function() {
 		h: 20,
 		y: 0,
 		space: Math.round(_GLOBAL.d/4),
-		speed: 6,
+		speed: 5,
 		count: Math.round(_GLOBAL.d/50)
 	};
 	//
