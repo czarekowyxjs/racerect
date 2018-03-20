@@ -137,7 +137,7 @@ App.onKey = function(e) {
 };
 
 App.addTrophy = function() {
-	if(_GLOBAL.rand(0,100) == 0) {
+	if(_GLOBAL.rand(0,800) == 0) {
 		App.trophy.push();
 	}
 };
